@@ -122,6 +122,34 @@ public class PGV_UT1 {
         }
          
     }
+    
+    /**
+     * Implementa un programa que lance 5 procesos hijo (espaciados entre ellos por 1 segundo) que ejecuten el programa DescargaFichero 
+     * (pasándole una URL aleatoria a través de un argumento). Después de ejecutar el último de los procesos debe consultar el estado de 
+     * todos sus hijos y todos los que quede en ejecución los debe matar, informando de ello mediante un mensaje en pantalla.
+     * 
+     * @throws IOException
+     * @throws InterruptedException 
+     */
+    public void a2_2() throws IOException, InterruptedException {
+        ProcessBuilder arrayPB[] = new ProcessBuilder[5];
+        Process arrayP[] = new Process[5]; 
+        
+        // Creamos los 5 procesos
+        for(int i=0; i<5; i++) {
+            arrayPB[i] = new ProcessBuilder("java", "-cp", classpathDescargaFichero, claseDescargaFichero, "http://www.ieselrincon.org/fichero" + Integer.toString(i) + ".jpg");
+            arrayP[i] = arrayPB[i].start();
+            TimeUnit.SECONDS.sleep(1);
+        }    
+        
+        // Después de crear todos los procesos, averiguamos cuáles siguen vivos para matarlos. En la mayoría de las ocasiones todos los procesos seguirán vivos
+        for(int i=0; i<5; i++) {
+            if (arrayP[i].isAlive()) {
+                arrayP[i].destroy();
+                System.out.println("Hemos tenido que matar al proceso " + Integer.toString(i) + " porque seguía ejecutándose");
+            }
+        }            
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         
@@ -132,7 +160,8 @@ public class PGV_UT1 {
         //objRepaso.a1_2();
         //objRepaso.a1_3();
         //objRepaso.a1_4();
-        objRepaso.a2_1();
+        //objRepaso.a2_1();
+        objRepaso.a2_2();
     }
     
 }
