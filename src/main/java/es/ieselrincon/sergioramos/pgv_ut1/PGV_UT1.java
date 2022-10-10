@@ -107,6 +107,7 @@ public class PGV_UT1 {
      */
     public void a2_1() throws IOException, InterruptedException {
         ProcessBuilder PB = new ProcessBuilder("java", "-cp", classpathDescargaFichero, claseDescargaFichero, "http://www.ieselrincon.org/fichero.jpg");
+        PB.inheritIO();
         Process P = PB.start();
         
         /**
@@ -138,6 +139,7 @@ public class PGV_UT1 {
         // Creamos los 5 procesos
         for(int i=0; i<5; i++) {
             arrayPB[i] = new ProcessBuilder("java", "-cp", classpathDescargaFichero, claseDescargaFichero, "http://www.ieselrincon.org/fichero" + Integer.toString(i) + ".jpg");
+            arrayPB[i].inheritIO();
             arrayP[i] = arrayPB[i].start();
             TimeUnit.SECONDS.sleep(1);
         }    
@@ -150,6 +152,26 @@ public class PGV_UT1 {
             }
         }            
     }
+    
+    /**
+     * Implementa un programa que lance 5 procesos hijo que ejecuten el programa DescargaFichero (pasándole una URL aleatoria a través de un argumento) 
+     * de forma que no comience la ejecución del siguiente proceso hijo hasta que no haya finalizado el anterior.
+     * 
+     * @throws InterruptedException
+     * @throws IOException 
+     */
+    public void a2_3() throws InterruptedException, IOException {
+        ProcessBuilder arrayPB[] = new ProcessBuilder[5];
+        Process arrayP[] = new Process[5]; 
+        
+        // Creamos los 5 procesos de forma secuencial esperando por la finalización del anterior
+        for(int i=0; i<5; i++) {
+            arrayPB[i] = new ProcessBuilder("java", "-cp", classpathDescargaFichero, claseDescargaFichero, "http://www.ieselrincon.org/fichero" + Integer.toString(i) + ".jpg");
+            arrayPB[i].inheritIO();
+            arrayP[i] = arrayPB[i].start();
+            arrayP[i].waitFor();
+        }
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         
@@ -161,7 +183,8 @@ public class PGV_UT1 {
         //objRepaso.a1_3();
         //objRepaso.a1_4();
         //objRepaso.a2_1();
-        objRepaso.a2_2();
+        //objRepaso.a2_2();
+        //objRepaso.a2_3();
     }
     
 }
