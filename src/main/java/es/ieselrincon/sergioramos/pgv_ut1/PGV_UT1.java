@@ -7,6 +7,7 @@ package es.ieselrincon.sergioramos.pgv_ut1;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -96,7 +97,31 @@ public class PGV_UT1 {
             arrayPB[i].redirectError(new File(rutaLog + "errorHijo" + Integer.toString(i) + ".log"));
             arrayP[i] = arrayPB[i].start();
         }        
-    }    
+    }   
+    
+    /**
+     * Implementa un programa que lance un proceso hijo que ejecute el programa DescargaFichero (pasándole una URL aleatoria a través de un argumento) 
+     * de forma que si tarda más de 5 segundos en descargar la URL, mate a dicho proceso y muestre un mensaje de error por la salida estándar.
+     * 
+     * @throws IOException 
+     */
+    public void a2_1() throws IOException, InterruptedException {
+        ProcessBuilder PB = new ProcessBuilder("java", "-cp", classpathDescargaFichero, claseDescargaFichero, "http://www.ieselrincon.org/fichero.jpg");
+        Process P = PB.start();
+        
+        /**
+         * waitFor espera 5 segundos o hasta que termine el proceso antes de los 5 segundos. Devuelve TRUE si el proceso ha terminado por sí mismo antes 
+         * de los 5 segundos y FALSE en caso contrario. En este último caso entra en el IF para destruir el proceso
+         */
+        if (!P.waitFor(5, TimeUnit.SECONDS)) {
+            P.destroy();
+            System.out.println("Matamos al proceso porque no terminó transcurridos 5 segundos");
+        }
+        else {
+            System.out.println("El proceso finalizó sin neceidad de matarlo");
+        }
+         
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         
@@ -106,7 +131,8 @@ public class PGV_UT1 {
         //objRepaso.a1_1();
         //objRepaso.a1_2();
         //objRepaso.a1_3();
-        objRepaso.a1_4();
-
+        //objRepaso.a1_4();
+        objRepaso.a2_1();
     }
+    
 }
