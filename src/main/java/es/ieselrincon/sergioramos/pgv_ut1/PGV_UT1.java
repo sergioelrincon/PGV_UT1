@@ -144,7 +144,11 @@ public class PGV_UT1 {
             TimeUnit.SECONDS.sleep(1);
         }    
         
-        // Después de crear todos los procesos, averiguamos cuáles siguen vivos para matarlos. En la mayoría de las ocasiones todos los procesos seguirán vivos
+        /**
+         * Después de crear todos los procesos, averiguamos cuáles siguen vivos para matarlos. 
+         * En la mayoría de las ocasiones todos los procesos seguirán vivos, pero ejecútalo varias veces para que veas que no siempre sucede
+         * Si aumentamos el tiempo de espera del buble anterior es más probable que los procesos finalicen antes de llegar a este punto
+         */
         for(int i=0; i<5; i++) {
             if (arrayP[i].isAlive()) {
                 arrayP[i].destroy();
@@ -172,6 +176,27 @@ public class PGV_UT1 {
             arrayP[i].waitFor();
         }
     }
+    
+    /**
+     * Crear un programa que ejecute el proceso hijo DescargaFichero de forma que, en lugar de pasarle la URL por un argumento, la obtenga del fichero "url.txt". 
+     * Muestra la salida por pantalla
+     */
+    public void a3_1() throws IOException, InterruptedException {
+        // Ruta donde está el fichero que contiene únicamente una URL
+        String ficheroURL = "/Users/sergioramos/NetBeansProjects/PGV_UT1/src/main/java/es/ieselrincon/sergioramos/pgv_ut1/url.txt";
+        ProcessBuilder pb = new ProcessBuilder("java", "-cp", classpathDescargaFichero, claseDescargaFichero);  
+        
+        // La entrada del proceso hijo será el fichero que contiene la ruta
+        pb.redirectInput(new File(ficheroURL));
+        
+        // La salida del proceso hijo será la misma que la del padre, para poder ver el mensaje por pantalla
+        pb.redirectOutput(ProcessBuilder.Redirect.INHERIT); 
+        
+        // Lanzamos el proceso hijo y esperamos a que termine, para comprobar que se ha ejecutado tomando como entrada la ruta almacenada en el fichero
+        Process p = pb.start();
+        p.waitFor();
+               
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         
@@ -185,6 +210,7 @@ public class PGV_UT1 {
         //objRepaso.a2_1();
         //objRepaso.a2_2();
         //objRepaso.a2_3();
+        objRepaso.a3_1();
     }
     
 }
