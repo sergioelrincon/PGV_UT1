@@ -5,8 +5,13 @@
 
 package es.ieselrincon.sergioramos.pgv_ut1;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -197,6 +202,37 @@ public class PGV_UT1 {
         p.waitFor();
                
     }
+    
+    /**
+     * Vamos a implementar un programa denominado "BuscayDescargaRecursosJava". Suponemos que está constantemente visitando portales donde localiza 
+     * recursos relacionados con Java y cada vez que encuentra uno le pasa la URL al proceso hijo "DescargaFichero" para que lo descargue. 
+     * En este caso no va a realizar ninguna búsqueda: solo va a generar URLs de forma aleatoria. Dichas URL se las va a pasar a través de Streams a 
+     * la entrada estándar del proceso hijo "DescargaFichero". Los mensajes de éxito y de error los mostrará el proceso hijo por pantalla.
+     */
+    public void a4_1() throws IOException, InterruptedException {
+        String URL;
+        
+        // En este caso no estamos constantemente descargando ficheros. Lo hacemos en 5 ocasiones
+        for(int i=0; i<5; i++) {
+            URL = "http://www.ieselrincon.org/" + UUID.randomUUID().toString() + ".pdf";    // Generamos una URL aleatoria
+       
+            ProcessBuilder pb = new ProcessBuilder("java", "-cp", classpathDescargaFichero, claseDescargaFichero);
+            
+            // Mostramos la salida estándar y de error por pantalla
+            pb.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+            pb.redirectError(ProcessBuilder.Redirect.INHERIT);
+
+            Process p = pb.start();
+
+            // Escribimos en la entrada estándar del proceso hijo
+            try ( OutputStream osp = p.getOutputStream(); // Obtenemos un stream de salida conectado con la entrada estándar del proceso hijo que acabamos de lanzar
+                OutputStreamWriter oswp = new OutputStreamWriter(osp, "UTF-8")) {
+                oswp.write(URL);                        // Escribimos en el stream anterior la URL generada 
+            } 
+
+            p.waitFor();
+        }
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         
@@ -210,7 +246,8 @@ public class PGV_UT1 {
         //objRepaso.a2_1();
         //objRepaso.a2_2();
         //objRepaso.a2_3();
-        objRepaso.a3_1();
+        //objRepaso.a3_1();
+        //objRepaso.a4_1();
     }
     
 }
