@@ -8,6 +8,7 @@ package es.ieselrincon.sergioramos.pgv_ut1;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -261,6 +262,56 @@ public class PGV_UT1 {
             p.waitFor();
         }        
     }
+    
+    /**
+     * Implementa un programa que lance el proceso hijo "DescargaFichero" pasándole la URL mediante un argumento. 
+     * En este caso, la salida estándar y de error del proceso hijo la va a leer el proceso padre y va a escribir por pantalla el mensaje 
+     * "El proceso hijo se ha ejecutado exitosamente y nos ha devuelto este mensaje: <mensaje devuelto por el hijo>". 
+     * En caso de error: "El proceso hijo ha generado un error y nos ha devuelto este mensaje: <mensaje devuelto por el hijo>".
+     * 
+     * @throws IOException
+     * @throws InterruptedException 
+     */
+    public void a4_3() throws IOException, InterruptedException {        
+        String linea;
+        
+        ProcessBuilder pb = new ProcessBuilder("java", "-cp", classpathDescargaFichero, claseDescargaFichero, "http://www.ieselrincon.org/ficheroX.jpg");
+        Process p = pb.start();
+        
+        // Esperamos a que finalice el proceso
+        int codRet = p.waitFor();        
+        System.out.println("La ejecución devuelve " + codRet);
+
+        // En función de si el proceso se ha ejecutado o no correctamente, leemos una salida u otra (estándar o de error)
+        if (codRet == 0) {
+            try(InputStream is = p.getInputStream();            // Obtenemos un stream binario de ENTRADA conectado con la SALIDA estándar del proceso
+            InputStreamReader isr = new InputStreamReader(is);  // Sobre el InputStream (stream binario) construimos un stream de texto
+            BufferedReader br = new BufferedReader(isr))        // Sobre el InputStreamReader (stream de texto) construimos un stream con buffering para leer líneas enteras
+            {
+                while ((linea = br.readLine()) != null) {   // Mostramos cada una de las líneas de la salida estándar
+                    System.out.println("El proceso hijo se ha ejecutado exitosamente y nos ha devuelto este mensaje: " + linea);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(2);
+            } 
+        }  
+        else {
+            try(InputStream isError = p.getErrorStream();            // Obtenemos un stream binario de ENTRADA conectado con la SALIDA de error del proceso
+                InputStreamReader isrError = new InputStreamReader(isError);  // Sobre el InputStream (stream binario) construimos un stream de texto
+                BufferedReader brError = new BufferedReader(isrError))
+            {
+                while ((linea = brError.readLine()) != null) {   // Mostramos cada una de las líneas de la salida estándar
+                    System.out.println("El proceso hijo ha generado un error y nos ha devuelto este mensaje: " + linea);
+                } 
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.exit(2);
+            }            
+         }        
+       
+               
+    }
 
     public static void main(String[] args) throws IOException, InterruptedException {
         
@@ -277,6 +328,7 @@ public class PGV_UT1 {
         //objRepaso.a3_1();
         //objRepaso.a4_1();
         //objRepaso.a4_2();
+        objRepaso.a4_3();
     }
     
 }
